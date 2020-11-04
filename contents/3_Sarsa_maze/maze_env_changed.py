@@ -149,10 +149,11 @@ class Maze(tk.Tk, object):
         return s_, reward, done
 
     def render(self):
-        time.sleep(0.00001)
+        time.sleep(0.000001)
         self.update()
 
-# 这个update只是用来测试maze_env的，让角色一直向下跑,和RL算法无关
+
+# 这个update只是用来测试maze_env的，让角色一直向下跑
 def update():
     for t in range(10):
         s = env.reset()

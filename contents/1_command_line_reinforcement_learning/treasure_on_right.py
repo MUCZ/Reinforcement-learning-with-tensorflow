@@ -19,7 +19,7 @@ EPSILON = 0.9   # greedy police
 ALPHA = 0.1     # learning rate
 GAMMA = 0.9    # discount factor
 MAX_EPISODES = 13   # maximum episodes
-FRESH_TIME = 0.3    # fresh time for one move
+FRESH_TIME = 0.5    # fresh time for one move
 
 
 def build_q_table(n_states, actions):
@@ -64,13 +64,13 @@ def update_env(S, episode, step_counter):
     env_list = ['-']*(N_STATES-1) + ['T']   # '---------T' our environment
     if S == 'terminal':
         interaction = 'Episode %s: total_steps = %s' % (episode+1, step_counter)
-        print('\r{}'.format(interaction), end='')
-        time.sleep(2)
-        print('\r                                ', end='')
+        # print('\r{}'.format(interaction), end='')
+        time.sleep(0.1)
+        # print('\r                                ', end='')
     else:
         env_list[S] = 'o'
         interaction = ''.join(env_list)
-        print('\r{}'.format(interaction), end='')
+        # print('\r{}'.format(interaction), end='')
         time.sleep(FRESH_TIME)
 
 
@@ -98,6 +98,8 @@ def rl():
 
             update_env(S, episode, step_counter+1)
             step_counter += 1
+        # print('\r\nQ-table:\n')
+        # print(q_table)
     return q_table
 
 

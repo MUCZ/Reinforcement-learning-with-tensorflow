@@ -10,7 +10,7 @@ import pandas as pd
 
 
 class QLearningTable:
-    def __init__(self, actions, learning_rate=0.01, reward_decay=0.9, e_greedy=0.9):
+    def __init__(self, actions, learning_rate=0.01, reward_decay=0.9, e_greedy=0.5):
         self.actions = actions  # a list
         self.lr = learning_rate
         self.gamma = reward_decay
@@ -44,8 +44,8 @@ class QLearningTable:
             # append new state to q table
             self.q_table = self.q_table.append(
                 pd.Series(
-                    [0]*len(self.actions),
-                    index=self.q_table.columns,
-                    name=state,
+                    [0]*len(self.actions), #初值为0
+                    index=self.q_table.columns, # index与q_table相同，从而能append进去
+                    name=state, #Series为一维的数据，因此没有colones定义，而是用单一的name定义
                 )
             )
