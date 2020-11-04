@@ -14,21 +14,16 @@ View more on my tutorial page: https://morvanzhou.github.io/tutorials/
 
 from maze_env import Maze
 from RL_brain import QLearningTable
-from plot import plot_Q
 
 
 def update():
-    for episode in range(5000):
+    for episode in range(100):
         # initial observation
         observation = env.reset()
-        done = False 
+
         while True:
             # fresh env
             env.render()
-
-            # break while loop when end of this episode
-            if done:
-                break
 
             # RL choose action based on observation
             action = RL.choose_action(str(observation))
@@ -42,19 +37,17 @@ def update():
             # swap observation
             observation = observation_
 
-            
+            # break while loop when end of this episode
+            if done:
+                break
+
     # end of game
     print('game over')
-    print(RL.q_table)
-
-    plot_Q(RL.q_table)
-
     env.destroy()
 
 if __name__ == "__main__":
     env = Maze()
     RL = QLearningTable(actions=list(range(env.n_actions)))
-    
-    env.after(1, update)
+
+    env.after(100, update)
     env.mainloop()
-    

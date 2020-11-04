@@ -10,9 +10,7 @@ Tensorflow: r1.2
 """
 
 import numpy as np
-import tensorflow.compat.v1 as tf
-tf.disable_v2_behavior()
-
+import tensorflow as tf
 
 np.random.seed(1)
 tf.set_random_seed(1)

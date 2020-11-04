@@ -21,10 +21,9 @@ else:
     import tkinter as tk
 
 
-UNIT = 60   # pixels
-Length_square = UNIT/2 -5 # 正方形的边长，圆的半径，减五是为了留空，美观
-MAZE_H = 5  # grid height
-MAZE_W = 5  # grid width
+UNIT = 40   # pixels
+MAZE_H = 4  # grid height
+MAZE_W = 4  # grid width
 
 
 class Maze(tk.Tk, object):
@@ -37,7 +36,7 @@ class Maze(tk.Tk, object):
         self._build_maze()
 
     def _build_maze(self):
-        self.canvas = tk.Canvas(self, bg='white', # canvas ： 画布
+        self.canvas = tk.Canvas(self, bg='white',
                            height=MAZE_H * UNIT,
                            width=MAZE_W * UNIT)
 
@@ -50,46 +49,32 @@ class Maze(tk.Tk, object):
             self.canvas.create_line(x0, y0, x1, y1)
 
         # create origin
-        origin = np.array([UNIT/2, UNIT/2])
+        origin = np.array([20, 20])
 
         # hell
-        hell1_center_u = np.array([2,1])                      # u 代表unit
-        hell1_center = origin + UNIT*hell1_center_u         # 点定义
-        self.hell1 = self.canvas.create_rectangle(          # 正方形定义
-            hell1_center[0] - Length_square, hell1_center[1] - Length_square,
-            hell1_center[0] + Length_square, hell1_center[1] + Length_square,
+        hell1_center = origin + np.array([UNIT * 2, UNIT])
+        self.hell1 = self.canvas.create_rectangle(
+            hell1_center[0] - 15, hell1_center[1] - 15,
+            hell1_center[0] + 15, hell1_center[1] + 15,
             fill='black')
         # hell
-        hell2_center_u = np.array([1,2])                      
-        hell2_center = origin + UNIT*hell2_center_u
+        hell2_center = origin + np.array([UNIT, UNIT * 2])
         self.hell2 = self.canvas.create_rectangle(
-            hell2_center[0] - Length_square, hell2_center[1] - Length_square,
-            hell2_center[0] + Length_square, hell2_center[1] + Length_square,
+            hell2_center[0] - 15, hell2_center[1] - 15,
+            hell2_center[0] + 15, hell2_center[1] + 15,
             fill='black')
-        # hell
-        hell3_center = origin + np.array([UNIT* 3, UNIT * 3])
-        self.hell3 = self.canvas.create_rectangle(
-            hell3_center[0] - Length_square, hell3_center[1] - Length_square,
-            hell3_center[0] + Length_square, hell3_center[1] + Length_square,
-        fill='black')
-        # hell
-        hell4_center = origin + np.array([UNIT* 2, UNIT * 3]) 
-        self.hell4 = self.canvas.create_rectangle(
-            hell4_center[0] - Length_square, hell4_center[1] - Length_square,
-            hell4_center[0] + Length_square, hell4_center[1] + Length_square,
-        fill='black')
 
-        # create oval   圆形
+        # create oval
         oval_center = origin + UNIT * 2
         self.oval = self.canvas.create_oval(
-            oval_center[0] - Length_square, oval_center[1] - Length_square,
-            oval_center[0] + Length_square, oval_center[1] + Length_square,
+            oval_center[0] - 15, oval_center[1] - 15,
+            oval_center[0] + 15, oval_center[1] + 15,
             fill='yellow')
 
-        # create red rect   红方块代表的机器人
+        # create red rect
         self.rect = self.canvas.create_rectangle(
-            origin[0] - Length_square, origin[1] - Length_square,
-            origin[0] + Length_square, origin[1] + Length_square,
+            origin[0] - 15, origin[1] - 15,
+            origin[0] + 15, origin[1] + 15,
             fill='red')
 
         # pack all
@@ -97,18 +82,15 @@ class Maze(tk.Tk, object):
 
     def reset(self):
         self.update()
-        time.sleep(0.00001)
+        time.sleep(0.5)
         self.canvas.delete(self.rect)
-
-        origin = np.array([UNIT/2, UNIT/2])
+        origin = np.array([20, 20])
         self.rect = self.canvas.create_rectangle(
-            origin[0] - Length_square, origin[1] - Length_square,
-            origin[0] + Length_square, origin[1] + Length_square,
+            origin[0] - 15, origin[1] - 15,
+            origin[0] + 15, origin[1] + 15,
             fill='red')
         # return observation
-        s_ = self.canvas.coords(self.rect)   
-        s_= [(s_[1]+s_[3]-UNIT)/(UNIT*2),(s_[0]+s_[2]-UNIT)/(UNIT*2)]
-        return s_
+        return self.canvas.coords(self.rect)
 
     def step(self, action):
         s = self.canvas.coords(self.rect)
@@ -129,30 +111,27 @@ class Maze(tk.Tk, object):
         self.canvas.move(self.rect, base_action[0], base_action[1])  # move agent
 
         s_ = self.canvas.coords(self.rect)  # next state
-        
- 
 
         # reward function
         if s_ == self.canvas.coords(self.oval):
             reward = 1
             done = True
             s_ = 'terminal'
-        elif s_ in [self.canvas.coords(self.hell1), self.canvas.coords(self.hell2),self.canvas.coords(self.hell3),self.canvas.coords(self.hell4)]:
+        elif s_ in [self.canvas.coords(self.hell1), self.canvas.coords(self.hell2)]:
             reward = -1
             done = True
             s_ = 'terminal'
         else:
             reward = 0
             done = False
-            s_ = [(s_[0]+s_[2]-UNIT)/(UNIT*2),(s_[1]+s_[3]-UNIT)/(UNIT*2)]
 
         return s_, reward, done
 
     def render(self):
-        time.sleep(0.00001)
+        time.sleep(0.1)
         self.update()
 
-# 这个update只是用来测试maze_env的，让角色一直向下跑,和RL算法无关
+
 def update():
     for t in range(10):
         s = env.reset()
@@ -165,5 +144,5 @@ def update():
 
 if __name__ == '__main__':
     env = Maze()
-    env.after(1, update)
+    env.after(100, update)
     env.mainloop()
